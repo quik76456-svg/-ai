@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SceneCraft 商品详情图生成器</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar" aria-label="创作控制台">
+        <div class="brand-block">
+          <p class="eyebrow">SceneCraft</p>
+          <h1>AI 商品详情图生成器</h1>
+        </div>
+
+        <section class="panel upload-panel">
+          <div class="panel-title">
+            <span>商品图</span>
+            <button class="icon-button" id="resetProduct" type="button" title="重置商品位置" aria-label="重置商品位置">
+              ↺
+            </button>
+          </div>
+          <label class="drop-zone" for="productUpload" id="dropZone">
+            <input id="productUpload" type="file" accept="image/*">
+            <span class="upload-icon">↑</span>
+            <strong>上传一张产品图</strong>
+            <small>支持 PNG、JPG、WebP，可拖拽到这里</small>
+          </label>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title">
+            <span>场景</span>
+          </div>
+          <div class="scene-list" id="sceneList" aria-label="场景列表"></div>
+        </section>
+
+        <section class="panel controls-panel">
+          <div class="panel-title">
+            <span>构图草稿</span>
+          </div>
+          <label class="control-row">
+            <span>尺寸</span>
+            <input id="scaleControl" type="range" min="20" max="180" value="75">
+          </label>
+          <label class="control-row">
+            <span>旋转</span>
+            <input id="rotateControl" type="range" min="-25" max="25" value="0">
+          </label>
+          <label class="control-row">
+            <span>阴影</span>
+            <input id="shadowControl" type="range" min="0" max="80" value="35">
+          </label>
+          <div class="button-row">
+            <button id="fitButton" type="button">适配场景</button>
+            <button id="frontButton" type="button">置于前景</button>
+          </div>
+        </section>
+
+        <section class="panel ai-panel">
+          <div class="panel-title">
+            <span>AI 合成</span>
+          </div>
+          <label class="select-row">
+            <span>生成质量</span>
+            <select id="qualitySelect">
+              <option value="detail">保留商品细节</option>
+              <option value="creative">增强场景氛围</option>
+              <option value="catalog">电商主图风格</option>
+            </select>
+          </label>
+          <label class="select-row">
+            <span>AI 接口</span>
+            <input id="apiEndpoint" type="url" value="/api/compose">
+          </label>
+          <label class="prompt-box">
+            <span>合成指令</span>
+            <textarea id="promptText" rows="5"></textarea>
+          </label>
+        </section>
+
+        <button class="generate-button" id="generateButton" type="button">生成 AI 商品图</button>
+        <button class="export-button" id="exportButton" type="button">导出生成结果</button>
+      </aside>
+
+      <section class="workspace" aria-label="商品详情图画布">
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">1080 × 1350</p>
+            <h2 id="sceneName">晨光厨房台面</h2>
+          </div>
+          <div class="status-pill" id="statusText">等待上传商品图</div>
+        </div>
+
+        <div class="canvas-wrap">
+          <div class="artboard" id="artboard">
+            <img class="scene-image" id="sceneImage" alt="当前商品场景">
+            <div class="placement-hint" id="placementHint">
+              <span>上传产品后先拖拽确定大致构图</span>
+            </div>
+            <img class="product-layer" id="productLayer" alt="上传的商品图">
+            <canvas class="ai-result" id="aiResultCanvas" width="1080" height="1350" aria-label="AI 合成结果"></canvas>
+            <div class="generation-mask" id="generationMask">
+              <div class="spinner"></div>
+              <strong>AI 正在重绘光影、透视和接触阴影</strong>
+            </div>
+          </div>
+          <div class="result-toolbar">
+            <button class="toggle-button is-active" id="draftViewButton" type="button">构图草稿</button>
+            <button class="toggle-button" id="resultViewButton" type="button">AI 结果</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <canvas id="exportCanvas" width="1080" height="1350" hidden></canvas>
+    <script src="script.js"></script>
+  </body>
+</html>
