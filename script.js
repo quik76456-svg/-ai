@@ -372,11 +372,14 @@ function drawSceneColorGrade(ctx, width, height) {
 async function requestAiComposite() {
   const endpoint = apiEndpoint.value.trim();
   if (endpoint) {
+    const productReference = createProductReferenceDataUrl();
+    const draftImage = createDraftCompositeDataUrl();
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        productImage: productDataUrl,
+        productImage: productReference,
+        draftImage,
         sceneId: activeScene.id,
         prompt: promptText.value,
         quality: qualitySelect.value,
@@ -399,6 +402,29 @@ async function requestAiComposite() {
   }
 
   return drawBrowserComposite();
+}
+
+function createDraftCompositeDataUrl() {
+  const ctx = exportCanvas.getContext("2d");
+  const width = exportCanvas.width;
+  const height = exportCanvas.height;
+  ctx.clearRect(0, 0, width, height);
+  drawDraftComposite(ctx, width, height);
+  return exportCanvas.toDataURL("image/jpeg", 0.92);
+}
+
+function createProductReferenceDataUrl() {
+  const canvas = document.createElement("canvas");
+  const maxSide = 1400;
+  const scale = Math.min(1, maxSide / Math.max(productImage.naturalWidth, productImage.naturalHeight));
+  canvas.width = Math.max(1, Math.round(productImage.naturalWidth * scale));
+  canvas.height = Math.max(1, Math.round(productImage.naturalHeight * scale));
+
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.drawImage(productImage, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", 0.92);
 }
 
 function drawGeneratedImage(src) {
